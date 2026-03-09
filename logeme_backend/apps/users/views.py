@@ -32,7 +32,7 @@ def _build_uid_token(user):
 
 def _send_verification_email(user):
     uid, token = _build_uid_token(user)
-    link = f"{settings.FRONTEND_BASE_URL}/verify-email?uid={uid}&token={token}"
+    link = f"{settings.APP_LINK_BASE}/verify-email?uid={uid}&token={token}"
     send_mail(
         subject='Vérifie ton email - LogeMe',
         message=f'Bonjour {user.full_name},\n\nClique sur ce lien pour vérifier ton email:\n{link}\n\nCe lien expirera.',
@@ -44,7 +44,7 @@ def _send_verification_email(user):
 
 def _send_password_reset_email(user):
     uid, token = _build_uid_token(user)
-    link = f"{settings.FRONTEND_BASE_URL}/reset-password?uid={uid}&token={token}"
+    link = f"{settings.APP_LINK_BASE}/reset-password?uid={uid}&token={token}"
     send_mail(
         subject='Réinitialisation du mot de passe - LogeMe',
         message=f'Bonjour {user.full_name},\n\nClique sur ce lien pour définir un nouveau mot de passe:\n{link}\n\nSi ce n’est pas toi, ignore cet email.',
