@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+*.db
+.venv/
+.env
+
+# Django media/static runtime
+logeme_backend/media/
+
+# Flutter/Dart
+logeme_mobile/.dart_tool/
+logeme_mobile/build/
+logeme_mobile/.flutter-plugins
+logeme_mobile/.flutter-plugins-dependencies
+logeme_mobile/.packages
+logeme_mobile/.idea/
+logeme_mobile/.metadata
+
+# IDE
+.vscode/
+.idea/
