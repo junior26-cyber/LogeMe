@@ -10,7 +10,7 @@ from .serializers import ListingCreateUpdateSerializer, ListingSerializer
 
 
 class ListingListCreateView(generics.ListCreateAPIView):
-    queryset = Listing.objects.filter(is_active=True).select_related('owner').prefetch_related('photos')
+    queryset = Listing.objects.none()
     serializer_class = ListingSerializer
     parser_classes = [MultiPartParser, FormParser]
 
@@ -25,7 +25,12 @@ class ListingListCreateView(generics.ListCreateAPIView):
         return ListingSerializer
 
     def get_queryset(self):
-        queryset = self.queryset
+        queryset = (
+            Listing.objects.filter(is_active=True)
+            .select_related('owner')
+            .prefetch_related('photos')
+            .all()
+        )
         params = self.request.query_params
         if params.get('price_min'):
             queryset = queryset.filter(price__gte=params['price_min'])
