@@ -40,6 +40,10 @@ flutter run
 ## Endpoints MVP
 
 - Auth: `/api/auth/register|login|logout|verify-email|forgot-password/`
+  - `POST /api/auth/request-email-verification/` (email)
+  - `POST /api/auth/verify-email/` (uid + token)
+  - `POST /api/auth/forgot-password/` (email)
+  - `POST /api/auth/reset-password-confirm/` (uid + token + new_password)
 - User: `/api/users/me/`
 - Listings: `/api/listings/`, `/api/listings/{id}/`, `/api/listings/my/`, `/api/listings/stats/`
 - Favorites: `/api/favorites/`, `/api/favorites/{id}/`

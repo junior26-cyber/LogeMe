@@ -4,7 +4,9 @@ import '../../features/auth/forgot_password_screen.dart';
 import '../../features/auth/login_screen.dart';
 import '../../features/auth/onboarding_screen.dart';
 import '../../features/auth/register_screen.dart';
+import '../../features/auth/reset_password_confirm_screen.dart';
 import '../../features/auth/splash_screen.dart';
+import '../../features/auth/verify_email_screen.dart';
 import '../../features/listings/home_screen.dart';
 import '../../features/listings/post_listing_screen.dart';
 import '../../features/notifications/notifications_screen.dart';
@@ -18,6 +20,8 @@ class AppRouter {
   static const home = '/home';
   static const postListing = '/post-listing';
   static const notifications = '/notifications';
+  static const verifyEmail = '/verify-email';
+  static const resetConfirm = '/reset-password-confirm';
 
   static final routes = <String, WidgetBuilder>{
     splash: (_) => const SplashScreen(),
@@ -28,5 +32,7 @@ class AppRouter {
     home: (_) => const HomeScreen(),
     postListing: (_) => const PostListingScreen(),
     notifications: (_) => const NotificationsScreen(),
+    verifyEmail: (_) => const VerifyEmailScreen(),
+    resetConfirm: (_) => const ResetPasswordConfirmScreen(),
   };
 }

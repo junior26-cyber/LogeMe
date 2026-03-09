@@ -84,7 +84,14 @@ class AuthService extends ChangeNotifier {
     });
 
     await _client.dio.post('/api/auth/register/', data: data);
-    await _client.dio.post('/api/auth/verify-email/', data: {'email': email});
+  }
+
+  Future<void> requestEmailVerification(String email) async {
+    await _client.dio.post('/api/auth/request-email-verification/', data: {'email': email});
+  }
+
+  Future<void> verifyEmailWithToken({required String uid, required String token}) async {
+    await _client.dio.post('/api/auth/verify-email/', data: {'uid': uid, 'token': token});
   }
 
   Future<void> login(String email, String password) async {
@@ -116,5 +123,17 @@ class AuthService extends ChangeNotifier {
 
   Future<void> forgotPassword(String email) async {
     await _client.dio.post('/api/auth/forgot-password/', data: {'email': email});
+  }
+
+  Future<void> resetPasswordConfirm({
+    required String uid,
+    required String token,
+    required String newPassword,
+  }) async {
+    await _client.dio.post('/api/auth/reset-password-confirm/', data: {
+      'uid': uid,
+      'token': token,
+      'new_password': newPassword,
+    });
   }
 }

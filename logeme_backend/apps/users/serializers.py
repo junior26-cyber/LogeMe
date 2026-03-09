@@ -55,7 +55,18 @@ class ForgotPasswordSerializer(serializers.Serializer):
 
 
 class VerifyEmailSerializer(serializers.Serializer):
+    uid = serializers.CharField()
+    token = serializers.CharField()
+
+
+class RequestEmailVerificationSerializer(serializers.Serializer):
     email = serializers.EmailField()
+
+
+class ResetPasswordConfirmSerializer(serializers.Serializer):
+    uid = serializers.CharField()
+    token = serializers.CharField()
+    new_password = serializers.CharField(write_only=True, min_length=8)
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/routes/app_router.dart';
 import '../../shared/services/auth_service.dart';
+import '../../shared/utils/app_error.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -14,12 +16,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final emailCtrl = TextEditingController();
 
   Future<void> _submit() async {
-    await context.read<AuthService>().forgotPassword(emailCtrl.text.trim());
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Email de réinitialisation envoyé si le compte existe.')),
-    );
-    Navigator.pop(context);
+    try {
+      await context.read<AuthService>().forgotPassword(emailCtrl.text.trim());
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Email de réinitialisation envoyé si le compte existe.')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(readableError(e))));
+    }
   }
 
   @override
@@ -33,6 +39,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             TextField(controller: emailCtrl, decoration: const InputDecoration(labelText: 'Email')),
             const SizedBox(height: 16),
             ElevatedButton(onPressed: _submit, child: const Text('Envoyer')),
+            TextButton(
+              onPressed: () => Navigator.pushNamed(context, AppRouter.resetConfirm),
+              child: const Text('J’ai déjà UID + token'),
+            ),
           ],
         ),
       ),

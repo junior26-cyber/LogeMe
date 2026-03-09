@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/routes/app_router.dart';
 import '../../shared/services/auth_service.dart';
+import '../../shared/utils/app_error.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -22,7 +23,20 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.pushReplacementNamed(context, AppRouter.home);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(readableError(e))));
+    }
+  }
+
+  Future<void> _resendVerification() async {
+    try {
+      await context.read<AuthService>().requestEmailVerification(emailCtrl.text.trim());
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Si le compte existe, un email de vérification a été envoyé.')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(readableError(e))));
     }
   }
 
@@ -46,6 +60,14 @@ class _LoginScreenState extends State<LoginScreen> {
             TextButton(
               onPressed: () => Navigator.pushNamed(context, AppRouter.register),
               child: const Text('Créer un compte'),
+            ),
+            TextButton(
+              onPressed: _resendVerification,
+              child: const Text('Renvoyer email de vérification'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pushNamed(context, AppRouter.verifyEmail),
+              child: const Text('J’ai déjà UID + token'),
             ),
           ],
         ),

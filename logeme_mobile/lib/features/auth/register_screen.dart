@@ -46,7 +46,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
             idDocumentPath: idDocumentPath,
           );
       if (!mounted) return;
-      Navigator.pushReplacementNamed(context, AppRouter.login);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Compte créé. Vérifie ton email via le lien reçu.')),
+      );
+      Navigator.pushReplacementNamed(context, AppRouter.verifyEmail);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(readableError(e))));
