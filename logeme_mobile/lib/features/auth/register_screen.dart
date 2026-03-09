@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/routes/app_router.dart';
 import '../../shared/services/auth_service.dart';
+import '../../shared/utils/app_error.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -17,26 +19,43 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final phoneCtrl = TextEditingController();
   final passCtrl = TextEditingController();
   String role = 'tenant';
+  String? idDocumentPath;
+
+  Future<void> _pickIdDocument() async {
+    final picker = ImagePicker();
+    final file = await picker.pickImage(source: ImageSource.gallery);
+    if (file == null) return;
+    setState(() => idDocumentPath = file.path);
+  }
 
   Future<void> _register() async {
     try {
+      if ((role == 'owner' || role == 'agency') && (idDocumentPath == null || idDocumentPath!.isEmpty)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Pièce d’identité obligatoire pour Propriétaire/Agence.')),
+        );
+        return;
+      }
+
       await context.read<AuthService>().register(
             fullName: nameCtrl.text.trim(),
             email: emailCtrl.text.trim(),
             phone: phoneCtrl.text.trim(),
             password: passCtrl.text.trim(),
             role: role,
+            idDocumentPath: idDocumentPath,
           );
       if (!mounted) return;
       Navigator.pushReplacementNamed(context, AppRouter.login);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(readableError(e))));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final requireDoc = role == 'owner' || role == 'agency';
     return Scaffold(
       appBar: AppBar(title: const Text('Inscription')),
       body: SingleChildScrollView(
@@ -61,6 +80,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ],
               onChanged: (value) => setState(() => role = value ?? 'tenant'),
             ),
+            if (requireDoc) ...[
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: _pickIdDocument,
+                icon: const Icon(Icons.badge_outlined),
+                label: const Text('Ajouter pièce d’identité'),
+              ),
+              if (idDocumentPath != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Text('Document sélectionné', style: Theme.of(context).textTheme.bodySmall),
+                ),
+            ],
             const SizedBox(height: 16),
             ElevatedButton(onPressed: _register, child: const Text('Créer le compte')),
           ],

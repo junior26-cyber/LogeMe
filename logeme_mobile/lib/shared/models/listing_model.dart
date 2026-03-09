@@ -2,6 +2,7 @@ import '../../core/constants/api_constants.dart';
 
 class ListingModel {
   final int id;
+  final int ownerId;
   final String title;
   final String description;
   final int price;
@@ -16,6 +17,7 @@ class ListingModel {
 
   ListingModel({
     required this.id,
+    required this.ownerId,
     required this.title,
     required this.description,
     required this.price,
@@ -33,6 +35,7 @@ class ListingModel {
     final rawPhotos = (json['photos'] as List?) ?? [];
     return ListingModel(
       id: json['id'] ?? 0,
+      ownerId: json['owner'] ?? 0,
       title: json['title'] ?? '',
       description: json['description'] ?? '',
       price: json['price'] ?? 0,
@@ -47,11 +50,7 @@ class ListingModel {
           .map((p) => (p is Map<String, dynamic> ? p['image'] : null) ?? '')
           .whereType<String>()
           .where((url) => url.isNotEmpty)
-          .map(
-            (url) => url.startsWith('http')
-                ? url
-                : '${ApiConstants.baseUrl}$url',
-          )
+          .map((url) => url.startsWith('http') ? url : '${ApiConstants.baseUrl}$url')
           .toList(),
     );
   }

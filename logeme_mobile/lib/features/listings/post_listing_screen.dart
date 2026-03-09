@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../shared/services/auth_service.dart';
 import '../../shared/services/listing_service.dart';
+import '../../shared/utils/app_error.dart';
 
 class PostListingScreen extends StatefulWidget {
   const PostListingScreen({super.key});
@@ -40,20 +41,25 @@ class _PostListingScreenState extends State<PostListingScreen> {
       return;
     }
 
-    await context.read<ListingService>().createListing(
-          token: auth.accessToken!,
-          title: titleCtrl.text.trim(),
-          description: descCtrl.text.trim(),
-          price: int.tryParse(priceCtrl.text) ?? 0,
-          type: type,
-          neighborhood: neighborhoodCtrl.text.trim(),
-          lat: selected.latitude,
-          lng: selected.longitude,
-          photoPaths: photoPaths,
-        );
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Annonce publiée.')));
-    Navigator.pop(context);
+    try {
+      await context.read<ListingService>().createListing(
+            token: auth.accessToken!,
+            title: titleCtrl.text.trim(),
+            description: descCtrl.text.trim(),
+            price: int.tryParse(priceCtrl.text) ?? 0,
+            type: type,
+            neighborhood: neighborhoodCtrl.text.trim(),
+            lat: selected.latitude,
+            lng: selected.longitude,
+            photoPaths: photoPaths,
+          );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Annonce publiée.')));
+      Navigator.pop(context);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(readableError(e))));
+    }
   }
 
   @override

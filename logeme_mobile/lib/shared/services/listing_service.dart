@@ -89,4 +89,40 @@ class ListingService extends ChangeNotifier {
       data: formData,
     );
   }
+
+  Future<void> updateListing({
+    required String token,
+    required int id,
+    required String title,
+    required String description,
+    required int price,
+    required String type,
+    required String neighborhood,
+    required double lat,
+    required double lng,
+  }) async {
+    await _client.dio.put(
+      '/api/listings/$id/',
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+      data: {
+        'title': title,
+        'description': description,
+        'price': price,
+        'type': type,
+        'neighborhood': neighborhood,
+        'city': 'Lomé',
+        'country': 'Togo',
+        'gps_latitude': lat,
+        'gps_longitude': lng,
+        'is_active': true,
+      },
+    );
+  }
+
+  Future<void> deleteListing({required String token, required int id}) async {
+    await _client.dio.delete(
+      '/api/listings/$id/',
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+  }
 }

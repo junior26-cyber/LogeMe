@@ -3,7 +3,9 @@ import 'package:provider/provider.dart';
 
 import '../../shared/services/auth_service.dart';
 import '../../shared/services/listing_service.dart';
+import '../../shared/utils/app_error.dart';
 import '../../shared/widgets/listing_card.dart';
+import 'edit_listing_screen.dart';
 import 'listing_detail_screen.dart';
 
 class MyListingsScreen extends StatefulWidget {
@@ -37,6 +39,20 @@ class _MyListingsScreenState extends State<MyListingsScreen> {
     setState(() => stats = s);
   }
 
+  Future<void> _delete(int id) async {
+    final token = context.read<AuthService>().accessToken;
+    if (token == null) return;
+    try {
+      await context.read<ListingService>().deleteListing(token: token, id: id);
+      await _loadData();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Annonce supprimée.')));
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(readableError(e))));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final service = context.watch<ListingService>();
@@ -62,14 +78,59 @@ class _MyListingsScreenState extends State<MyListingsScreen> {
         Expanded(
           child: service.myListings.isEmpty
               ? const Center(child: Text('Aucune annonce publiée.'))
-              : ListView.builder(
-                  itemCount: service.myListings.length,
-                  itemBuilder: (_, i) => ListingCard(
-                    listing: service.myListings[i],
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => ListingDetailScreen(listingId: service.myListings[i].id)),
-                    ),
+              : RefreshIndicator(
+                  onRefresh: _loadData,
+                  child: ListView.builder(
+                    itemCount: service.myListings.length,
+                    itemBuilder: (_, i) {
+                      final item = service.myListings[i];
+                      return Dismissible(
+                        key: ValueKey(item.id),
+                        direction: DismissDirection.endToStart,
+                        background: Container(
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          color: Colors.red,
+                          child: const Icon(Icons.delete, color: Colors.white),
+                        ),
+                        confirmDismiss: (_) async {
+                          return await showDialog<bool>(
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                  title: const Text('Supprimer'),
+                                  content: const Text('Supprimer cette annonce ?'),
+                                  actions: [
+                                    TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annuler')),
+                                    ElevatedButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Supprimer')),
+                                  ],
+                                ),
+                              ) ??
+                              false;
+                        },
+                        onDismissed: (_) => _delete(item.id),
+                        child: ListTile(
+                          title: ListingCard(
+                            listing: item,
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => ListingDetailScreen(listingId: item.id)),
+                            ),
+                          ),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.edit_outlined),
+                            onPressed: () async {
+                              final changed = await Navigator.push<bool>(
+                                context,
+                                MaterialPageRoute(builder: (_) => EditListingScreen(listing: item)),
+                              );
+                              if (changed == true) {
+                                await _loadData();
+                              }
+                            },
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
         ),
