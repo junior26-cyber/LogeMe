@@ -15,6 +15,19 @@ class VerifyEmailScreen extends StatefulWidget {
 class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   final uidCtrl = TextEditingController();
   final tokenCtrl = TextEditingController();
+  bool _loadedArgs = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_loadedArgs) return;
+    _loadedArgs = true;
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args is Map) {
+      uidCtrl.text = (args['uid'] ?? '').toString();
+      tokenCtrl.text = (args['token'] ?? '').toString();
+    }
+  }
 
   Future<void> _verify() async {
     try {
