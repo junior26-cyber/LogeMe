@@ -8,6 +8,17 @@ class AppTheme {
     return ThemeData(
       scaffoldBackgroundColor: AppColors.secondary,
       colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
+      appBarTheme: AppBarTheme(
+        backgroundColor: Colors.white,
+        foregroundColor: AppColors.textPrimary,
+        elevation: 0.5,
+        centerTitle: true,
+        titleTextStyle: GoogleFonts.poppins(
+          color: AppColors.textPrimary,
+          fontWeight: FontWeight.w600,
+          fontSize: 18,
+        ),
+      ),
       textTheme: TextTheme(
         headlineMedium: GoogleFonts.poppins(
           color: AppColors.textPrimary,

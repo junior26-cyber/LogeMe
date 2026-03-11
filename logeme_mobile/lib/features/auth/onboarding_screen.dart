@@ -7,29 +7,25 @@ class OnboardingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final slides = [
-      'Trouve ton logement rapidement à Lomé',
-      'Contact direct propriétaire ou agence',
-      'Plateforme fiable pour Togo et Afrique de l\'Ouest',
-    ];
+    const message = 'Plateforme simple et moderne pour trouver ou publier un logement.';
 
     return Scaffold(
-      body: PageView.builder(
-        itemCount: slides.length,
-        itemBuilder: (_, i) => Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(slides[i], textAlign: TextAlign.center, style: const TextStyle(fontSize: 24)),
-              const SizedBox(height: 32),
-              if (i == slides.length - 1)
-                ElevatedButton(
-                  onPressed: () => Navigator.pushReplacementNamed(context, AppRouter.login),
-                  child: const Text('Commencer'),
-                ),
-            ],
-          ),
+      body: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 24),
+            ),
+            const SizedBox(height: 32),
+            ElevatedButton(
+              onPressed: () => Navigator.pushReplacementNamed(context, AppRouter.login),
+              child: const Text('Commencer'),
+            ),
+          ],
         ),
       ),
     );
